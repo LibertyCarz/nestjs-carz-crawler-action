@@ -19,7 +19,7 @@ permissions:
   actions: write
 
 jobs:
-  pre-deployment:
+  pre-crawler:
     name: Pre Deployment
     runs-on: ubuntu-latest
     outputs:
@@ -58,43 +58,79 @@ jobs:
       #     message: "🚀 - Start crawling data Khmer24..."
 
   crawler:
-    needs: [pre-deployment]
+    needs: [pre-crawler]
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        machine: ${{ fromJson(needs.pre-deployment.outputs.matrix) }}
+        machine: ${{ fromJson(needs.pre-crawler.outputs.matrix) }}
     runs-on: ${{ matrix.machine.name }}
     steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
+      - name: Clone nestjs-carz-crawler-action.
+        uses: actions/checkout@v4
         with:
-          repository: "LibertyCarz/nestjs-carz-crawler"
           token: ${{ secrets.GH_TOKEN }}
-          ref: "main"
-      - name: Set up Node.js
+          path: nestjs-carz-crawler-action
+          ref: main
+
+      - name: Clone repository nestjs-carz-crawler.
+        uses: actions/checkout@v4
+        with:
+          repository: LibertyCarz/nestjs-carz-crawler
+          token: ${{ secrets.GH_TOKEN }}
+          path: nestjs-carz-crawler
+          ref: main
+
+      - name: Set up Node.js.
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.0
-      - name: Install dependencies
+
+      - name: Install dependencies.
+        working-directory: nestjs-carz-crawler
         run: npm install --force
-      - name: Start NestJS application
+
+      - name: Start NestJS application.
+        working-directory: nestjs-carz-crawler
         run: |
           node -v
           echo "const crawler = require('./crawl'); crawler.createData(${{ matrix.machine.chunk }});" > crawler${{ matrix.machine.chunk }}.js
           node crawler${{ matrix.machine.chunk }}
 
-      - name: Push changes
+      - name: Switch git user to github action.
+        working-directory: nestjs-carz-crawler-action
         run: |
-          du -h ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git push origin --delete feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
-          git checkout --orphan feat-t/data-crawler-${{ matrix.machine.chunk }}
-          git add ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Switch to new Branch.
+        working-directory: nestjs-carz-crawler-action
+        run: |
+          git push origin --delete chunk/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+          git checkout --orphan chunk/data-crawler-${{ matrix.machine.chunk }}
+
+      - name: Copy file.
+        run: cp nestjs-carz-crawler/${{ matrix.machine.chunk }}.cars-data-crawler.csv nestjs-carz-crawler-action/
+
+      - name: Push to chunk/data-crawler-${{ matrix.machine.chunk }}.
+        working-directory: nestjs-carz-crawler-action
+        run: |
+          git add -A
           git commit -m "✅ - Save crawler data."
-          git push origin feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
-          cat ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
+          git push origin chunk/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+          git push origin chunk/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+
+      # - name: Push changes
+      #   run: |
+      #     du -h ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --global user.name "github-actions[bot]"
+      #     git push origin --delete feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+      #     git checkout --orphan feat-t/data-crawler-${{ matrix.machine.chunk }}
+      #     git add ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
+      #     git commit -m "✅ - Save crawler data."
+      #     git push origin feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+      #     cat ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
 
   #     - name: Failure notification
   #       if: ${{ failure() }}
@@ -103,14 +139,25 @@ jobs:
   #         to: ${{ secrets.TELEGRAM_CHANNEL }}
   #         token: ${{ secrets.TELEGRAM_TOKEN }}
   #         message: "💣 - Failure crawling data Khmer24(${{ matrix.machine.chunk }})."
-  # finish:
-  #   needs: [crawler]
+  # after-crawler:
+  #   needs: [pre-crawler, crawler]
   #   name: Send Notification Result
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - name: Succesfully notification
-  #       uses: appleboy/telegram-action@master
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
   #       with:
-  #         to: ${{ secrets.TELEGRAM_CHANNEL }}
-  #         token: ${{ secrets.TELEGRAM_TOKEN }}
-  #         message: "✅ - Success crawling data Khmer24."
+  #         repository: "LibertyCarz/nestjs-carz-crawler"
+  #         token: ${{ secrets.GH_TOKEN }}
+  #         ref: "main"
+
+  #     - name: Clone as branch
+  #       run: |
+  #         git clone https://LibertyCarz:${{ secrets.GH_TOKEN }}@github.com/LibertyCarz/nestjs-carz-crawler.git
+
+  # - name: Succesfully notification
+  #   uses: appleboy/telegram-action@master
+  #   with:
+  #     to: ${{ secrets.TELEGRAM_CHANNEL }}
+  #     token: ${{ secrets.TELEGRAM_TOKEN }}
+  #     message: "✅ - Success crawling data Khmer24."
