@@ -72,30 +72,29 @@ jobs:
           repository: "LibertyCarz/nestjs-carz-crawler"
           token: ${{ secrets.GH_TOKEN }}
           ref: "main"
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 18.12.0
-  #     - name: Install dependencies
-  #       run: npm install --force
-  #     - name: Start NestJS application
-  #       run: |
-  #         node -v
-  #         echo "const crawler = require('./crawl'); crawler.createData(${{ matrix.os.chunk }});" > crawler${{ matrix.os.chunk }}.js
-  #         node crawler${{ matrix.os.chunk }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.0
+      - name: Install dependencies
+        run: npm install --force
+      - name: Start NestJS application
+        run: |
+          node -v
+          echo "const crawler = require('./crawl'); crawler.createData(${{ matrix.machine.chunk }});" > crawler${{ matrix.machine.chunk }}.js
+          node crawler${{ matrix.machine.chunk }}
 
-  #     - name: Push changes
-  #       run: |
-  #         du -h ./${{ matrix.os.chunk }}.cars-data-crawler.csv
-  #         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-  #         git config --global user.name "github-actions[bot]"
-  #         git push origin --delete feat/data-crawler-${{ matrix.os.chunk }} || echo "Error"
-  #         git branch -d feat/data-crawler-${{ matrix.os.chunk }} || echo "Error"
-  #         git checkout -b feat/data-crawler-${{ matrix.os.chunk }}
-  #         git add ./${{ matrix.os.chunk }}.cars-data-crawler.csv
-  #         git commit -m "✅ - Save crawler data."
-  #         git push --set-upstream origin feat/data-crawler-${{ matrix.os.chunk }} || echo "Error"
-  #         cat ./${{ matrix.os.chunk }}.cars-data-crawler.csv
+      - name: Push changes
+        run: |
+          du -h ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git push origin --delete feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+          git checkout --orphan feat-t/data-crawler-${{ matrix.machine.chunk }}
+          git add ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
+          git commit -m "✅ - Save crawler data."
+          git push origin feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+          cat ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
 
   #     - name: Failure notification
   #       if: ${{ failure() }}
@@ -103,7 +102,7 @@ jobs:
   #       with:
   #         to: ${{ secrets.TELEGRAM_CHANNEL }}
   #         token: ${{ secrets.TELEGRAM_TOKEN }}
-  #         message: "💣 - Failure crawling data Khmer24(${{ matrix.os.chunk }})."
+  #         message: "💣 - Failure crawling data Khmer24(${{ matrix.machine.chunk }})."
   # finish:
   #   needs: [crawler]
   #   name: Send Notification Result
