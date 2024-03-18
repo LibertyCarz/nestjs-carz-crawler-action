@@ -17,6 +17,7 @@ on:
 permissions:
   contents: write
   actions: write
+
 jobs:
   pre-deployment:
     name: Pre Deployment
@@ -41,7 +42,7 @@ jobs:
           done
           echo "value=[ $MATRIX ]" >> $GITHUB_OUTPUT
 
-      - name: Echo all value
+      - name: Echo all value.
         run: |
           echo Number of machines: ${{ steps.number-machines.outputs.value }}
           echo Matrix: ${{ steps.maxtrix.outputs.value }}
