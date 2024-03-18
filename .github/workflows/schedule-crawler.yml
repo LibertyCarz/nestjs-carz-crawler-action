@@ -58,7 +58,6 @@ jobs:
         id: message-information
         run: |
           source .github/scripts/utils.sh
-          get_message_information
           echo "value=$(get_message_information)" >> "$GITHUB_OUTPUT"
 
       - name: Notification to telegram
@@ -127,15 +126,20 @@ jobs:
           git checkout --orphan chunk/data-crawler-${{ matrix.machine.chunk }}
           git reset
 
-      - name: Copy file.
-        run: cp nestjs-carz-crawler/${{ matrix.machine.chunk }}.cars-data-crawler.csv nestjs-carz-crawler-action/
+      - name: Copy file
+        run: |
+          if [ -e "nestjs-carz-crawler/${{ matrix.machine.chunk }}.cars-data-crawler.csv" ]; then
+            cp nestjs-carz-crawler/${{ matrix.machine.chunk }}.cars-data-crawler.csv nestjs-carz-crawler-action/
+          else
+            touch nestjs-carz-crawler-action/${{ matrix.machine.chunk }}.cars-data-crawler.csv
+          fi
 
       - name: Push to chunk/data-crawler-${{ matrix.machine.chunk }}.
         working-directory: nestjs-carz-crawler-action
         run: |
           git add ${{ matrix.machine.chunk }}.cars-data-crawler.csv
           git commit -m "✅ - Save crawler data."
-          git push origin chunk/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
+          git push origin chunk/data-crawler-${{ matrix.machine.chunk }}
 
       - name: Failure notification
         if: ${{ failure() }}
@@ -177,7 +181,7 @@ jobs:
           cat 1.cars-data-crawler.csv >>cars-data-crawler.csv
           for i in {2..${{needs.pre-crawler.outputs.number-machines}}};
           do
-            tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv
+            tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv || echo "ERROR"
           done
 
       - name: Switch git user to github action.
