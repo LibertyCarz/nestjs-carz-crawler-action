@@ -190,14 +190,10 @@ jobs:
           git commit -m "✅ - Save crawler data."
           git push origin main || echo "Error"
 
-      # - name: Remove Chunk branch
-      #   working-directory: nestjs-carz-crawler-action/data
-      #   run: |
-      #     for i in {2..${{ needs.pre-crawler.outputs.number-machines }}}
-      #     do
-      #       cat $i.cars-data-crawler.csv >> cars-data-crawler.csv
-      #       echo \n >> cars-data-crawler.csv
-      #     done
+      - name: Remove Chunk branch
+        working-directory: nestjs-carz-crawler-action/data
+        run: |
+          git branch -r | grep 'origin' | grep -v 'main$' | grep -v HEAD | cut -d/ -f2- | while read line; do git push origin :heads/$line; done;
 
   #     - name: Clone as branch
   #       run: |
