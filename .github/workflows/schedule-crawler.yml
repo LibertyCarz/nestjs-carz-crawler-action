@@ -29,7 +29,7 @@ jobs:
     outputs:
       number-machines: ${{ steps.number-machines.outputs.value }}
       matrix: ${{ steps.matrix.outputs.value }}
-      message: ${{ steps.message_information.outputs.value }}
+      message: ${{ steps.message-information.outputs.value }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,21 +52,23 @@ jobs:
           done
           echo "value=[ $MATRIX ]" >> $GITHUB_OUTPUT
       - name: Generate message
-        id: message_information
+        id: message-information
         run: |
           source .github/scripts/utils.sh
-          echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
+          echo "VALUE=$(get_mes-age_information)" >> "$GITHUB_OUTPUT"
         timeout-minutes: 1
+
+      - name: Notification to telegram
+        uses: PacificPromise/macos-telegram-action@main
+        with:
+          type: channel
+          message: "🚀 Start crawling data Khmer24: ${{ steps.message-information.outputs.VALUE }}"
 
       - name: Echo all value.
         run: |
           echo Number of machines: ${{ steps.number-machines.outputs.value }}
           echo Matrix: ${{ steps.matrix.outputs.value }}
-      - name: Notification to telegram
-        uses: PacificPromise/macos-telegram-action@main
-        with:
-          type: channel
-          message: "🚀 Start crawling data Khmer24: ${{ steps.message_information.outputs.VALUE }}"
+          echo Message: ${{ steps.message-information.outputs.value }}
 
   crawler:
     name: Crawler
