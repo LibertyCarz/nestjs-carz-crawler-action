@@ -22,6 +22,9 @@ jobs:
   pre-deployment:
     name: Pre Deployment
     runs-on: ubuntu-latest
+    outputs:
+      number-machines: ${{ steps.number-machines.outputs.value }}
+      matrix: ${{ steps.matrix.outputs.value }}
     steps:
       - name: Calculation inputs number machines.
         id: number-machines
@@ -33,7 +36,7 @@ jobs:
           echo "value=$NUMBER" >> $GITHUB_OUTPUT
 
       - name: Calculation machines.
-        id: maxtrix
+        id: matrix
         run: |
           MATRIX="{ name: ubuntu-latest, chunk: 1 }"
           for i in {2..${{ steps.number-machines.outputs.value }}}
@@ -45,7 +48,7 @@ jobs:
       - name: Echo all value.
         run: |
           echo Number of machines: ${{ steps.number-machines.outputs.value }}
-          echo Matrix: ${{ steps.maxtrix.outputs.value }}
+          echo Matrix: ${{ steps.matrix.outputs.value }}
 
       # - name: Notification to telegram
       #   uses: appleboy/telegram-action@master
@@ -54,33 +57,21 @@ jobs:
       #     token: ${{ secrets.TELEGRAM_TOKEN }}
       #     message: "🚀 - Start crawling data Khmer24..."
 
-  # crawler:
-  #   needs: [pre-deployment]
-  #   continue-on-error: true
-  #   strategy:
-  #     fail-fast: true
-  #     matrix:
-  #       os:
-  #         [
-  #           { name: ubuntu-latest, chunk: 0 },
-  #           { name: ubuntu-latest, chunk: 1 },
-  #           { name: ubuntu-latest, chunk: 2 },
-  #           { name: ubuntu-latest, chunk: 3 },
-  #           { name: ubuntu-latest, chunk: 4 },
-  #           { name: ubuntu-latest, chunk: 5 },
-  #           { name: ubuntu-latest, chunk: 6 },
-  #           { name: ubuntu-latest, chunk: 7 },
-  #           { name: ubuntu-latest, chunk: 8 },
-  #           { name: ubuntu-latest, chunk: 9 },
-  #         ]
-  #   runs-on: ${{ matrix.os.name }}
-  #   steps:
-  #     - name: Clone repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: "LibertyCarz/nestjs-carz-crawler"
-  #         token: ${{ secrets.GH_TOKEN }}
-  #         ref: "main"
+  crawler:
+    needs: [pre-deployment]
+    continue-on-error: true
+    strategy:
+      fail-fast: true
+      matrix:
+        machine: ${{ needs.pre-deployment.outputs.matrix }}
+    runs-on: ${{ matrix.machine.name }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          repository: "LibertyCarz/nestjs-carz-crawler"
+          token: ${{ secrets.GH_TOKEN }}
+          ref: "main"
   #     - name: Set up Node.js
   #       uses: actions/setup-node@v3
   #       with:
