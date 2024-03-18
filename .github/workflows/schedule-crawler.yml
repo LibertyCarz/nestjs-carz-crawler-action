@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        machine: ${{ needs.pre-deployment.outputs.matrix }}
+        machine: ${{ fromJson(needs.pre-deployment.outputs.matrix) }}
     runs-on: ${{ matrix.machine.name }}
     steps:
       - name: Clone repository
