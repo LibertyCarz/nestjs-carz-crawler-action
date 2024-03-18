@@ -43,6 +43,7 @@ jobs:
             NUMBER=${{ github.event.inputs.number-machines }}
           fi
           echo "value=$NUMBER" >> $GITHUB_OUTPUT
+
       - name: Calculation machines.
         id: matrix
         run: |
@@ -52,18 +53,19 @@ jobs:
             MATRIX="$MATRIX,{\"name\":\"ubuntu-latest\",\"chunk\":$i}"
           done
           echo "value=[ $MATRIX ]" >> $GITHUB_OUTPUT
+
       - name: Generate message
         id: message-information
         run: |
           source .github/scripts/utils.sh
           get_message_information
-          echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
+          echo "value=$(get_message_information)" >> "$GITHUB_OUTPUT"
 
       # - name: Notification to telegram
       #   uses: PacificPromise/macos-telegram-action@main
       #   with:
       #     type: channel
-      #     message: "🚀 Start crawling data Khmer24: ${{ steps.message-information.outputs.VALUE }}"
+      #     message: "🚀 Start crawling data Khmer24: ${{ steps.message-information.outputs.value }}"
 
       - name: Echo all value.
         run: |
@@ -163,7 +165,7 @@ jobs:
 
   #     - name: Loop running.
   #       run: |
-  #         for i in {1..${{ needs.pre-crawler.outputs.number-machines }}} 
+  #         for i in {1..${{ needs.pre-crawler.outputs.number-machines }}}
   #         do
   #           git clone -b chunk/data-crawler-$i  https://LibertyCarz:${{ secrets.GH_TOKEN }}@github.com/LibertyCarz/nestjs-carz-crawler-action.git chunk-$i
   #           cp chunk-$i/$i.cars-data-crawler.csv nestjs-carz-crawler-action/data/
@@ -173,7 +175,7 @@ jobs:
   #       working-directory: nestjs-carz-crawler-action/data
   #       run: |
   #         cat 1.cars-data-crawler.csv >>cars-data-crawler.csv
-  #         for i in {2..${{needs.pre-crawler.outputs.number-machines}}}; 
+  #         for i in {2..${{needs.pre-crawler.outputs.number-machines}}};
   #         do
   #           tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv
   #         done
