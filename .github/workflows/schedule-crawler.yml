@@ -25,7 +25,11 @@ jobs:
     outputs:
       number-machines: ${{ steps.number-machines.outputs.value }}
       matrix: ${{ steps.matrix.outputs.value }}
+      message: ${{ steps.message_information.outputs.value }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Calculation inputs number machines.
         id: number-machines
         run: |
@@ -45,24 +49,31 @@ jobs:
           done
           echo "value=[ $MATRIX ]" >> $GITHUB_OUTPUT
 
+      - name: Generate message
+        id: message_information
+        run: |
+          source .github/scripts/utils.sh
+          echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
+        timeout-minutes: 1
+
       - name: Echo all value.
         run: |
           echo Number of machines: ${{ steps.number-machines.outputs.value }}
           echo Matrix: ${{ steps.matrix.outputs.value }}
 
-      # - name: Notification to telegram
-      #   uses: appleboy/telegram-action@master
-      #   with:
-      #     to: ${{ secrets.TELEGRAM_CHANNEL }}
-      #     token: ${{ secrets.TELEGRAM_TOKEN }}
-      #     message: "🚀 - Start crawling data Khmer24..."
+      - name: Notification to telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ vars.TELEGRAM_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: "🚀 Start crawling data Khmer24: ${{ steps.message_information.outputs.VALUE }}"
 
   crawler:
     name: Crawler
     needs: [pre-crawler]
-    continue-on-error: true
+    # continue-on-error: true
     strategy:
-      fail-fast: true
+      # fail-fast: true
       matrix:
         machine: ${{ fromJson(needs.pre-crawler.outputs.matrix) }}
     runs-on: ${{ matrix.machine.name }}
@@ -120,25 +131,13 @@ jobs:
           git commit -m "✅ - Save crawler data."
           git push origin chunk/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
 
-  # - name: Push changes
-  #   run: |
-  #     du -h ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
-  #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-  #     git config --global user.name "github-actions[bot]"
-  #     git push origin --delete feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
-  #     git checkout --orphan feat-t/data-crawler-${{ matrix.machine.chunk }}
-  #     git add ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
-  #     git commit -m "✅ - Save crawler data."
-  #     git push origin feat-t/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
-  #     cat ./${{ matrix.machine.chunk }}.cars-data-crawler.csv
-
-  # - name: Failure notification
-  #   if: ${{ failure() }}
-  #   uses: appleboy/telegram-action@master
-  #   with:
-  #     to: ${{ secrets.TELEGRAM_CHANNEL }}
-  #     token: ${{ secrets.TELEGRAM_TOKEN }}
-  #     message: "💣 - Failure crawling data Khmer24(${{ matrix.machine.chunk }})."
+      - name: Failure notification
+        if: ${{ failure() }}
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ vars.TELEGRAM_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: "💣 Failure crawling data Khmer24: \n - Chunk: ${{ matrix.machine.chunk }}. ${{ needs.pre-crawler.outputs.message }}"
 
   after-crawler:
     needs: [pre-crawler, crawler]
@@ -195,13 +194,9 @@ jobs:
           git fetch
           git branch -r | grep 'origin' | grep -v 'main$' | grep -v HEAD | cut -d/ -f2- | while read line; do git push origin :heads/$line; done;
 
-  #     - name: Clone as branch
-  #       run: |
-  #         git clone https://LibertyCarz:${{ secrets.GH_TOKEN }}@github.com/LibertyCarz/nestjs-carz-crawler.git
-
-  # - name: Succesfully notification
-  #   uses: appleboy/telegram-action@master
-  #   with:
-  #     to: ${{ secrets.TELEGRAM_CHANNEL }}
-  #     token: ${{ secrets.TELEGRAM_TOKEN }}
-  #     message: "✅ - Success crawling data Khmer24."
+      - name: Notification to telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ vars.TELEGRAM_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: "✅ Success crawling data Khmer24: ${{ needs.pre-crawler.outputs.message }}"
