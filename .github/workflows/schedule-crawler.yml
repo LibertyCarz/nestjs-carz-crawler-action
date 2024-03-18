@@ -38,10 +38,10 @@ jobs:
       - name: Calculation machines.
         id: matrix
         run: |
-          MATRIX="{ name: ubuntu-latest, chunk: 1 }"
+          MATRIX="{\"name\":\"ubuntu-latest\",\"chunk\":1}"
           for i in {2..${{ steps.number-machines.outputs.value }}}
           do
-            MATRIX="$MATRIX, { name: ubuntu-latest, chunk: $i }"
+            MATRIX="$MATRIX,{\"name\":\"ubuntu-latest\",\"chunk\":$i}"
           done
           echo "value=[ $MATRIX ]" >> $GITHUB_OUTPUT
 
