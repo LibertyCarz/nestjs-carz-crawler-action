@@ -181,7 +181,7 @@ jobs:
           cat 1.cars-data-crawler.csv >>cars-data-crawler.csv
           for i in {2..${{needs.pre-crawler.outputs.number-machines}}};
           do
-            tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv || echo "ERROR"
+            tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv
           done
 
       - name: Switch git user to github action.
