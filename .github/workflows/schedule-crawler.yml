@@ -55,7 +55,7 @@ jobs:
         id: message-information
         run: |
           source .github/scripts/utils.sh
-          echo "VALUE=$(get_mes-age_information)" >> "$GITHUB_OUTPUT"
+          echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
         timeout-minutes: 1
 
       # - name: Notification to telegram
