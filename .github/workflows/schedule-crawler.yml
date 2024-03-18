@@ -120,6 +120,7 @@ jobs:
         run: |
           git push origin --delete chunk/data-crawler-${{ matrix.machine.chunk }} || echo "Error"
           git checkout --orphan chunk/data-crawler-${{ matrix.machine.chunk }}
+          git reset
 
       - name: Copy file.
         run: cp nestjs-carz-crawler/${{ matrix.machine.chunk }}.cars-data-crawler.csv nestjs-carz-crawler-action/
