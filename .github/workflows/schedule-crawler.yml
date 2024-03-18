@@ -26,6 +26,7 @@ jobs:
   pre-crawler:
     name: Pre Crawler
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     outputs:
       number-machines: ${{ steps.number-machines.outputs.value }}
       matrix: ${{ steps.matrix.outputs.value }}
@@ -57,7 +58,6 @@ jobs:
           source .github/scripts/utils.sh
           get_message_information
           echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
-        timeout-minutes: 1
 
       # - name: Notification to telegram
       #   uses: PacificPromise/macos-telegram-action@main
@@ -66,7 +66,6 @@ jobs:
       #     message: "🚀 Start crawling data Khmer24: ${{ steps.message-information.outputs.VALUE }}"
 
       - name: Echo all value.
-        timeout-minutes: 1
         run: |
           echo Number of machines: ${{ steps.number-machines.outputs.value }}
           echo Matrix: ${{ steps.matrix.outputs.value }}
