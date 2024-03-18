@@ -41,23 +41,22 @@ jobs:
           if [ "${{ github.event.inputs.number-machines }}" ]; then
             NUMBER=${{ github.event.inputs.number-machines }}
           fi
-          echo "value=$NUMBER" >> $GITHUB_OUTPUT
+          echo "value=$NUMBER" >>$GITHUB_OUTPUT
 
       - name: Calculation machines.
         id: matrix
         run: |
           MATRIX="{\"name\":\"ubuntu-latest\",\"chunk\":1}"
-          for i in {2..${{ steps.number-machines.outputs.value }}}
-          do
+          for i in {2..${{ steps.number-machines.outputs.value }}} do
             MATRIX="$MATRIX,{\"name\":\"ubuntu-latest\",\"chunk\":$i}"
           done
-          echo "value=[ $MATRIX ]" >> $GITHUB_OUTPUT
+          echo "value=[ $MATRIX ]" >>$GITHUB_OUTPUT
 
       - name: Generate message
         id: message_information
         run: |
           source .github/scripts/utils.sh
-          echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
+          echo "VALUE=$(get_message_information)" >>"$GITHUB_OUTPUT"
         timeout-minutes: 1
 
       - name: Echo all value.
@@ -162,8 +161,7 @@ jobs:
 
       - name: Loop running.
         run: |
-          for i in {2..${{ needs.pre-crawler.outputs.number-machines }}}
-          do
+          for i in {1..${{ needs.pre-crawler.outputs.number-machines }}} do
             git clone -b chunk/data-crawler-$i  https://LibertyCarz:${{ secrets.GH_TOKEN }}@github.com/LibertyCarz/nestjs-carz-crawler-action.git chunk-$i
             cp chunk-$i/$i.cars-data-crawler.csv nestjs-carz-crawler-action/data/
           done
@@ -171,10 +169,9 @@ jobs:
       - name: Merge files
         working-directory: nestjs-carz-crawler-action/data
         run: |
-          for i in {2..${{ needs.pre-crawler.outputs.number-machines }}}
-          do
-            cat $i.cars-data-crawler.csv >> cars-data-crawler.csv
-            echo \n >> cars-data-crawler.csv
+          cat 1.cars-data-crawler.csv >>cars-data-crawler.csv
+          for i in {2..10}; do
+            tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv
           done
 
       - name: Switch git user to github action.
