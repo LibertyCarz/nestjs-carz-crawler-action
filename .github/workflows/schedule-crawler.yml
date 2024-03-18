@@ -55,6 +55,7 @@ jobs:
         id: message-information
         run: |
           source .github/scripts/utils.sh
+          get_message_information
           echo "VALUE=$(get_message_information)" >> "$GITHUB_OUTPUT"
         timeout-minutes: 1
 
