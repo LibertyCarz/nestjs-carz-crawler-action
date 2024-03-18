@@ -69,9 +69,9 @@ jobs:
 
       - name: Echo all value.
         run: |
-          echo Number of machines: ${{ steps.number-machines.outputs.value }}
-          echo Matrix: ${{ steps.matrix.outputs.value }}
-          echo Message: ${{ steps.message-information.outputs.value }}
+          echo "Number of machines: ${{ steps.number-machines.outputs.value }}"
+          echo "Message: ${{ steps.message-information.outputs.value }}"
+          echo "Matrix: ${{ steps.matrix.outputs.value }}"
 
   # crawler:
   #   name: Crawler
