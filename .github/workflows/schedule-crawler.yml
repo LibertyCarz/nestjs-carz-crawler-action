@@ -1,4 +1,4 @@
-name: Project Carz Schedule Crawler data
+name: Project Carz Schedule Crawler data.
 on:
   schedule:
     - cron: 0 0 * * 1 # Runs at 12 AM (midnight) every Monday
