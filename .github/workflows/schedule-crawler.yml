@@ -8,7 +8,7 @@ on:
       number-machines:
         description: "Total number of machines"
         required: True
-        default: "10"
+        default: "20"
 
   # push:
   #   branches:
@@ -37,7 +37,7 @@ jobs:
       - name: Calculation inputs number machines.
         id: number-machines
         run: |
-          NUMBER=10
+          NUMBER=20
           if [ "${{ github.event.inputs.number-machines }}" ]; then
             NUMBER=${{ github.event.inputs.number-machines }}
           fi
@@ -170,7 +170,7 @@ jobs:
         working-directory: nestjs-carz-crawler-action/data
         run: |
           cat 1.cars-data-crawler.csv >>cars-data-crawler.csv
-          for i in {2..10}; 
+          for i in {2..${{needs.pre-crawler.outputs.number-machines}}}; 
           do
             tail -n +2 "$i.cars-data-crawler.csv" >>cars-data-crawler.csv
           done
