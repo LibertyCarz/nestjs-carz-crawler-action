@@ -82,6 +82,9 @@ jobs:
         machine: ${{ fromJson(needs.pre-crawler.outputs.matrix) }}
     runs-on: ${{ matrix.machine.name }}
     steps:
+      - name: Check IP
+        run: curl https://ipinfo.io/ip || echo "Error"
+
       - name: Clone nestjs-carz-crawler-action.
         uses: actions/checkout@v4
         with:
