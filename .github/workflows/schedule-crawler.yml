@@ -167,7 +167,7 @@ jobs:
           rm -rf data
           mkdir data
 
-      - name: Loop running.
+      - name: Loop clone.
         run: |
           for i in {1..${{ needs.pre-crawler.outputs.number-machines }}}
           do
