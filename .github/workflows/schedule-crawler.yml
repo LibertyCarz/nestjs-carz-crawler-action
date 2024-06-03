@@ -65,7 +65,7 @@ jobs:
       - name: Notification to telegram
         uses: PacificPromise/macos-telegram-action@main
         with:
-          type: channel
+          type: topic
           message: "🚀 Start crawling data Khmer24: ${{ steps.message-information.outputs.value }}"
 
       - name: Echo all value.
@@ -150,7 +150,7 @@ jobs:
         if: ${{ failure() }}
         uses: PacificPromise/macos-telegram-action@main
         with:
-          type: channel
+          type: topic
           message: "💣 Failure crawling data Khmer24: \n - Chunk: ${{ matrix.machine.chunk }}. ${{ needs.pre-crawler.outputs.message }}"
 
   after-crawler:
@@ -211,5 +211,5 @@ jobs:
       - name: Notification to telegram
         uses: PacificPromise/macos-telegram-action@main
         with:
-          type: channel
+          type: topic
           message: "✅ Success crawling data Khmer24: ${{ needs.pre-crawler.outputs.message }}"
