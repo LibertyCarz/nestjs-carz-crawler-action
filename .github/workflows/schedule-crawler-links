@@ -3,11 +3,11 @@ on:
   schedule:
     - cron: 0 0 * * 0 # Runs at 12 AM (midnight) every Saturday
 
-  workflow_dispatch:
-    inputs:
-      reason:
-        description: "Fill reason here!!!!!!"
-        required: false
+ # workflow_dispatch:
+ #   inputs:
+ #     reason:
+ #       description: "Fill reason here!!!!!!"
+ #       required: false
 permissions:
   contents: write
   actions: write
