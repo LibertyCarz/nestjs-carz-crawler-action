@@ -25,7 +25,7 @@ jobs:
   crawler:
     name: Crawler All Links
     runs-on: ubuntu-latest
-    # needs: [pre-deployment]
+    needs: [pre-deployment]
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -44,7 +44,7 @@ jobs:
       - name: Start NestJS application
         run: |
           node -v
-          echo "const crawler = require('./rawl-all-links'); crawler.scrapeWithScroll(2);" > crawlerAll.js
+          echo "const crawler = require('./rawl-all-links'); crawler.scrapeWithScroll(1700);" > crawlerAll.js
           node crawlerAll.js
 
       - name: Push changes
