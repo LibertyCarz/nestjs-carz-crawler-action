@@ -1,7 +1,7 @@
 name: Project Carz Schedule Crawler All URLs
 on:
-  schedule:
-    - cron: 0 0 * * 0 # Runs at 12 AM (midnight) every Saturday
+  # schedule:
+    # - cron: 0 0 * * 0 # Runs at 12 AM (midnight) every Saturday
 
   workflow_dispatch:
     inputs:
