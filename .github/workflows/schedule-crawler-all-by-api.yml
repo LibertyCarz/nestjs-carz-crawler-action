@@ -1,8 +1,8 @@
 name: API Crawling ALL URLS Project Carz Schedule 
 on:
-  # schedule:
+  schedule:
+   - cron: 0 0 * * 0
   #   - cron: 0 0 * * 6 # Runs at 12 AM (midnight) every Saturday
-  # - cron: '* * * * *' # Runs every minute
 
   workflow_dispatch:
     inputs:
