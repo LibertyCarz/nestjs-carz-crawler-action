@@ -1,4 +1,4 @@
-name: Project Carz Schedule Crawler ALL URLS by API
+name: API Crawling ALL URLS Project Carz Schedule 
 on:
   # schedule:
   #   - cron: 0 0 * * 6 # Runs at 12 AM (midnight) every Saturday
@@ -47,7 +47,7 @@ jobs:
       - name: Start NestJS application
         run: |
           node -v
-          echo "const {getAllUrls} = require('./crawls/crawl-urls-by-api'); getAllUrls(120);" > crawl-urls.js
+          echo "const {getAllUrls} = require('./crawls/crawl-urls-by-api'); getAllUrls(100);" > crawl-urls.js
           node crawl-urls.js
       # - name: Calculate Matrix
       #   run: |
