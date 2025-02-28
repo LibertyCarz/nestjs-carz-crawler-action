@@ -51,6 +51,7 @@ jobs:
             { name: ubuntu-latest, chunk: 17 },
             { name: ubuntu-latest, chunk: 18 },
             { name: ubuntu-latest, chunk: 19 },
+            { name: ubuntu-latest, chunk: 20 },
           ]
     runs-on: ${{ matrix.os.name }}
     steps:
@@ -66,8 +67,8 @@ jobs:
         with:
           node-version: 18.12.0
 
-      - name: Install dependencies
-        run: npm install --force
+      # - name: Install dependencies
+      #   run: npm install --force
 
       - name: Start NestJS application
         run: |
