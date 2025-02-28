@@ -9,7 +9,7 @@ on:
       number-machines:
         description: "Total number of machines"
         required: True
-        default: "201"
+        default: "52"
 permissions:
   contents: write
   actions: write
